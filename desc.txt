@@ -1,0 +1,39 @@
+___________________________________________________________________
+first line is page reference
+Each number in the page reference string is
+separated by whitespace and is terminated by a new line
+
+___________________________________________________________________
+second line is the number of frames allocated to a specific process
+
+___________________________________________________________________
+The remaining lines will be string mnemonics; one for each page 
+replacement algorithm.
+
+___________________________________________________________________
+Output from your program will be the following. Echo the page 
+reference string up to 20 page references per line. Echo the number 
+of frames allocated to the process. Print the page replacement 
+algorithm "mnemonic" and the number of page faults. Although your 
+program reads from standard input and writes to standard output, 
+it is suggested that you have several program data files that you 
+can re-direct standard input and thus have your program read.
+
+
+
+
+
+Example Input:
+
+7 0 1 2 0 3 0 4 2 3 0 3 2 1 2 0 1 7 0 1
+3
+FIFO
+LRU
+
+
+% simpager < testcase1.txt
+Page Reference String:
+7 0 1 2 0 3 0 4 2 3 0 3 2 1 2 0 1 7 0 1
+Number of Frames: 3
+FIFO: 15
+LRU: 12
