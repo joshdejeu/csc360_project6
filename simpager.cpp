@@ -6,6 +6,7 @@ using namespace std;
 #include <string>
 #include <unordered_map>
 #include <queue> //fifo
+#include <stack> //lru
 
 vector<int> convertStringToVectorInt(string refs);
 void printPageReference(vector<int> nums);
@@ -120,6 +121,34 @@ int simLRU(vector<int> page_refs, int frame_count)
 {
     int miss_count = 0;
     int frames_filled = 0;
+    // initialize a vect of size 'frame_count' with all values of '-1'
+    vector<int> frames(frame_count, -1);
+    stack<int> lru_stack;
+
+    for (int i = 0; i < page_refs.size(); i++)
+    {
+        bool frame_hit = (isNumInVector(page_refs[i], frames));
+        if (frame_hit)
+        {
+            continue;
+        }
+        // empty frame exists
+        else if (frames_filled < frame_count)
+        {
+            frames[frames_filled] = page_refs[i];
+            lru_stack.push(frames_filled++);
+            miss_count++;
+        }
+        // frame miss
+        else
+        {
+            int victimn_frame_index = lru_stack.top();
+            lru_stack.pop();
+            frames[victimn_frame_index] = page_refs[i];
+            lru_stack.push(victimn_frame_index++ % 3);
+            miss_count++;
+        }
+    }
 
     return miss_count;
 }
