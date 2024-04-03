@@ -5,11 +5,13 @@ using namespace std;
 #include <sstream>
 #include <string>
 #include <unordered_map>
+#include <queue> //fifo
 
 vector<int> convertStringToVectorInt(string refs);
 void printPageReference(vector<int> nums);
 bool simulateAlgorithm(int mapped_algorithm, vector<int> page_refs, int frames);
-bool isNumInVector(int num, vector<int> vec);
+bool isNumInVector(int num, const vector<int> &vec);
+void displayFrame(vector<int> frame);
 
 int main(int argc, char *argv[])
 {
@@ -57,7 +59,7 @@ int main(int argc, char *argv[])
     }
 }
 
-bool isNumInVector(int num, vector<int> vec)
+bool isNumInVector(int num, const vector<int> &vec)
 {
     for (int n : vec)
     {
@@ -67,19 +69,19 @@ bool isNumInVector(int num, vector<int> vec)
     return false;
 }
 
+void displayFrame(vector<int> frame)
+{
+    cout << endl;
+    for (int n : frame)
+        cout << n << ", ";
+    cout << endl;
+}
+
 // given an ID run an algoirthm on page refs with a frame
 bool simulateAlgorithm(int mapped_algorithm, vector<int> page_refs, int frame_count)
 {
     // initialize a vect of size 'frame_count' with all values of '-1'
     vector<int> frames(frame_count, -1);
-
-    for (int page_ref : page_refs)
-    {
-        if (isNumInVector(page_ref, frames))
-        {
-            cout << "Yes!" << endl;
-        }
-    }
 
     switch (mapped_algorithm)
     {
@@ -87,18 +89,47 @@ bool simulateAlgorithm(int mapped_algorithm, vector<int> page_refs, int frame_co
         cout << "FIFO: ";
         break;
     case 2:
-        cout << "\nLRU: ";
+        cout << "LRU: ";
         break;
     case 3:
-        cout << "\nOPT: ";
+        cout << "OPT: ";
         break;
     case 4:
-        cout << "\nRAND: ";
+        cout << "RAND: ";
         break;
     default:
         return false;
-        break;
     }
+
+    // swap num into frame based on algorithm Id
+    int emptyFrames = frame_count;
+    queue<int> fifo_queue;
+    for (int page_ref : page_refs)
+    {
+        // check if num is NOT in frame
+        bool frame_hit = (isNumInVector(page_ref, frames));
+        if (emptyFrames > 0)
+            frames[frame_count - 1 - (--emptyFrames)] = page_ref;
+
+        switch (mapped_algorithm)
+        {
+        case 1:
+            fifo_queue.push(page_ref);
+            // left off here, next decide what to do if empty frames !>0
+            // you have the fifo number in the queue. find its index and pop and replace with next num
+            cout << frame_hit << " ";
+            break;
+        case 2:
+            break;
+        case 3:
+            break;
+        case 4:
+            break;
+        }
+    }
+    displayFrame(frames);
+
+    cout << endl;
     return true;
 }
 
