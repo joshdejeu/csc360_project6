@@ -5,8 +5,9 @@ using namespace std;
 #include <sstream>
 #include <string>
 #include <unordered_map>
-#include <queue> //fifo
-#include <stack> //lru
+#include <queue>  //fifo
+#include <stack>  //lru
+#include <random> //rand
 
 vector<int> convertStringToVectorInt(string refs);
 void printPageReference(vector<int> nums);
@@ -15,6 +16,19 @@ bool isNumInVector(int num, const vector<int> &vec);
 void displayFrame(vector<int> frame);
 int simFIFO(vector<int> page_refs, int frame_count);
 int simLRU(vector<int> page_refs, int frame_count);
+int simOPT(vector<int> page_refs, int frame_count);
+int simRAND(vector<int> page_refs, int frame_count);
+
+int generateRandomNumber(int n)
+{
+    // Created with trial an error using a question from a stack overflow forum
+    // link: https://stackoverflow.com/questions/41489979/random-integers-from-a-function-always-return-the-same-number-why
+    random_device rd;                           // random hardward number
+    mt19937 eng(rd());                          // change randomness seed
+    uniform_int_distribution<> distr(0, n - 1); // the range from 0 to n-1
+
+    return distr(eng); // return randomly generated num
+}
 
 int main(int argc, char *argv[])
 {
@@ -153,6 +167,102 @@ int simLRU(vector<int> page_refs, int frame_count)
     return miss_count;
 }
 
+int simOPT(vector<int> page_refs, int frame_count)
+{
+    int miss_count = 0;
+    int frames_filled = 0;
+    // initialize a vect of size 'frame_count' with all values of '-1'
+    vector<int> frames(frame_count, -1);
+
+    for (int i = 0; i < page_refs.size(); i++)
+    {
+        bool frame_hit = (isNumInVector(page_refs[i], frames));
+        if (frame_hit)
+        {
+            continue;
+        }
+        // empty frame exists
+        else if (frames_filled < frame_count)
+        {
+            frames[frames_filled++] = page_refs[i];
+            miss_count++;
+        }
+        // frame miss
+        else
+        {
+            int max_future_index = -1;
+            int victimn_frame_index = -1;
+
+            // check which number appears latest in future
+            for (int j = 0; j < frame_count; j++)
+            {
+                int frame_to_find = frames[j];
+                int latest_use_index = 0;
+
+                // remove that number from frame copy
+                // the last number to remain will be the latest num used
+                for (int k = i + 1; k < page_refs.size(); k++)
+                {
+                    if (page_refs[k] == frame_to_find)
+                    {
+                        latest_use_index = k;
+                        break;
+                    }
+                }
+
+                if (latest_use_index == 0)
+                {
+                    victimn_frame_index = j;
+                    break;
+                }
+
+                if (latest_use_index > max_future_index)
+                {
+                    max_future_index = latest_use_index;
+                    victimn_frame_index = j;
+                }
+            }
+
+            frames[victimn_frame_index] = page_refs[i];
+            miss_count++;
+        }
+    }
+
+    return miss_count;
+}
+
+int simRAND(vector<int> page_refs, int frame_count)
+{
+    int miss_count = 0;
+    int frames_filled = 0;
+
+    // initialize a vect of size 'frame_count' with all values of '-1'
+    vector<int> frames(frame_count, -1);
+
+    for (int i = 0; i < page_refs.size(); i++)
+    {
+        bool frame_hit = (isNumInVector(page_refs[i], frames));
+        if (frame_hit)
+        {
+            continue;
+        }
+        // empty frame exists
+        else if (frames_filled < frame_count)
+        {
+            frames[frames_filled++] = page_refs[i];
+            miss_count++;
+        }
+        // frame miss
+        else
+        {
+            int victimn_frame_index = generateRandomNumber(3);
+            frames[victimn_frame_index] = page_refs[i];
+            miss_count++;
+        }
+    }
+    return miss_count;
+}
+
 // given an ID run an algoirthm on page refs with a frame
 bool simulateAlgorithm(int mapped_algorithm, vector<int> page_refs, int frame_count)
 {
@@ -166,10 +276,10 @@ bool simulateAlgorithm(int mapped_algorithm, vector<int> page_refs, int frame_co
         cout << "LRU: " << simLRU(page_refs, frame_count);
         break;
     case 3:
-        cout << "OPT: ";
+        cout << "OPT: " << simOPT(page_refs, frame_count);
         break;
     case 4:
-        cout << "RAND: ";
+        cout << "RAND: " << simRAND(page_refs, frame_count);
         break;
     default:
         return false;
