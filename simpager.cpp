@@ -1,3 +1,13 @@
+//********************************************************************
+//
+// Josh Dejeu
+// Operating Systems
+// Project #6: Simulation of Page Replacement Strategies
+// Due 4/3/2024
+// Instructor: Dr. Siming Liu
+//
+//********************************************************************
+
 using namespace std;
 
 #include <iostream>
@@ -11,14 +21,29 @@ using namespace std;
 
 vector<int> convertStringToVectorInt(string refs);
 void printPageReference(vector<int> nums);
-bool simulateAlgorithm(int mapped_algorithm, vector<int> page_refs, int frames);
+bool simulateAlgorithms(int mapped_algorithm, vector<int> page_refs, int frames);
 bool isNumInVector(int num, const vector<int> &vec);
-void displayFrame(vector<int> frame);
 int simFIFO(vector<int> page_refs, int frame_count);
 int simLRU(vector<int> page_refs, int frame_count);
 int simOPT(vector<int> page_refs, int frame_count);
 int simRAND(vector<int> page_refs, int frame_count);
 
+//********************************************************************
+//
+// Generate Random Number
+//
+// This function generates a random number between 0 and a given number
+// n exclusive.
+//
+// Return Value
+// ------------
+// int                         Random number between 0 and n-1
+//
+// Value Parameters
+// ----------------
+// n		int                 The upper bound of random number
+//
+//*******************************************************************
 int generateRandomNumber(int n)
 {
     // Created with trial an error using a question from a stack overflow forum
@@ -30,6 +55,23 @@ int generateRandomNumber(int n)
     return distr(eng); // return randomly generated num
 }
 
+//********************************************************************
+//
+// Main
+//
+// This function takes in inputs from a text file and runs
+// frame swapping algorithms found in the txt file
+//
+// Return Value
+// ------------
+// int                         Success/Fail
+//
+// Value Parameters
+// ----------------
+// argc		int                Count of cmd line arguments
+// *argv    char               Point to 'string' of arguments from cmd line
+//
+//*******************************************************************
 int main(int argc, char *argv[])
 {
     vector<int> int_page_refs;
@@ -65,7 +107,7 @@ int main(int argc, char *argv[])
             break;
         default:
             if (input_section >= 3)
-                simulateAlgorithm(algorithmMap[line], int_page_refs, frame_count);
+                simulateAlgorithms(algorithmMap[line], int_page_refs, frame_count);
             break;
         }
     }
@@ -76,6 +118,26 @@ int main(int argc, char *argv[])
     }
 }
 
+//********************************************************************
+//
+// Is Number In Vector
+//
+// This function returns true/false if a given number exists within
+// a given vector of ints
+//
+// Return Value
+// ------------
+// bool                 True if number exists else false
+//
+// Value Parameters
+// ----------------
+// num		int             The number to search for
+//
+// Reference Parameters
+// --------------------
+// vec     vector<int>      The vector of ints to search
+//
+//*******************************************************************
 bool isNumInVector(int num, const vector<int> &vec)
 {
     for (int n : vec)
@@ -86,14 +148,23 @@ bool isNumInVector(int num, const vector<int> &vec)
     return false;
 }
 
-void displayFrame(vector<int> frame)
-{
-    cout << endl;
-    for (int n : frame)
-        cout << n << ", ";
-    cout << endl;
-}
-
+//********************************************************************
+//
+// Simulate First-In First-Out
+//
+// This function simulates the FIFO pageswap algorithm given page references
+// and frame count. It counts the number of frame misses and returns it.
+//
+// Return Value
+// ------------
+// int                            The count of frame misses
+//
+// Value Parameters
+// ----------------
+// page_refs		vector<int>   The page reference ints
+// frame_count		int           The number of frames to store references in
+//
+//*******************************************************************
 int simFIFO(vector<int> page_refs, int frame_count)
 {
     int miss_count = 0;
@@ -131,6 +202,23 @@ int simFIFO(vector<int> page_refs, int frame_count)
     return miss_count;
 }
 
+//********************************************************************
+//
+// Simulate Least Recently Used
+//
+// This function simulates the LRU pageswap algorithm given page references
+// and frame count. It counts the number of frame misses and returns it.
+//
+// Return Value
+// ------------
+// int                            The count of frame misses
+//
+// Value Parameters
+// ----------------
+// page_refs		vector<int>   The page reference ints
+// frame_count		int           The number of frames to store references in
+//
+//*******************************************************************
 int simLRU(vector<int> page_refs, int frame_count)
 {
     int miss_count = 0;
@@ -167,6 +255,23 @@ int simLRU(vector<int> page_refs, int frame_count)
     return miss_count;
 }
 
+//********************************************************************
+//
+// Simulate Optimal
+//
+// This function simulates the OPT pageswap algorithm given page references
+// and frame count. It counts the number of frame misses and returns it.
+//
+// Return Value
+// ------------
+// int                            The count of frame misses
+//
+// Value Parameters
+// ----------------
+// page_refs		vector<int>   The page reference ints
+// frame_count		int           The number of frames to store references in
+//
+//*******************************************************************
 int simOPT(vector<int> page_refs, int frame_count)
 {
     int miss_count = 0;
@@ -231,6 +336,23 @@ int simOPT(vector<int> page_refs, int frame_count)
     return miss_count;
 }
 
+//********************************************************************
+//
+// Simulate Random
+//
+// This function simulates the RAND pageswap algorithm given page references
+// and frame count. It counts the number of frame misses and returns it.
+//
+// Return Value
+// ------------
+// int                            The count of frame misses
+//
+// Value Parameters
+// ----------------
+// page_refs		vector<int>   The page reference ints
+// frame_count		int           The number of frames to store references in
+//
+//*******************************************************************
 int simRAND(vector<int> page_refs, int frame_count)
 {
     int miss_count = 0;
@@ -263,8 +385,26 @@ int simRAND(vector<int> page_refs, int frame_count)
     return miss_count;
 }
 
-// given an ID run an algoirthm on page refs with a frame
-bool simulateAlgorithm(int mapped_algorithm, vector<int> page_refs, int frame_count)
+//********************************************************************
+//
+// Simulate Algorithms
+//
+// This function runs any algorithms specified in a txt file on data
+// parsed from that same file, given a vector of ints for page references
+// and an int for frame count
+//
+// Return Value
+// ------------
+// bool                 Success/Fail to turn an algorithm
+//
+// Value Parameters
+// ----------------
+// mapped_algorithm		int             Id of frame-swap algorithm mapped to an int
+// page_refs		    vector<int>     The page reference numbers
+// frame_count		    int             The count of frames
+//
+//*******************************************************************
+bool simulateAlgorithms(int mapped_algorithm, vector<int> page_refs, int frame_count)
 {
 
     switch (mapped_algorithm)
@@ -289,6 +429,22 @@ bool simulateAlgorithm(int mapped_algorithm, vector<int> page_refs, int frame_co
     return true;
 }
 
+//********************************************************************
+//
+// Convert String To Vector
+//
+// This function takes a string of integers seperated by spaces and
+// populates a vector with the numbers between each space.
+//
+// Return Value
+// ------------
+// vector<int>                 The vector with all the ints
+//
+// Value Parameters
+// ----------------
+// refs		string             The string with numbers seperated by spaces
+//
+//*******************************************************************
 vector<int> convertStringToVectorInt(string refs)
 {
     vector<int> nums;
@@ -302,6 +458,21 @@ vector<int> convertStringToVectorInt(string refs)
     return nums;
 }
 
+//********************************************************************
+//
+// Print Page Reference
+//
+// This function prints all the ints parsed from the number string
+//
+// Return Value
+// ------------
+// void
+//
+// Value Parameters
+// ----------------
+// nums		vector<int>         A vector of ints
+//
+//*******************************************************************
 void printPageReference(vector<int> nums)
 {
     cout << "\nPage Reference String:" << endl;
